@@ -431,3 +431,6 @@ form label { font-size: 12px; }
   .carousel-track, .carousel-dot span { transition: none; }
 }
 
+
+/* Navigate the homepage slider by dragging, swiping or choosing a dot. */
+.hero-carousel .carousel-navigation { display: none; }
