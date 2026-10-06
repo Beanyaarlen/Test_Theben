@@ -58,6 +58,66 @@ const PRODUCTS = {
   }
 };
 
+// Product-specific buying links supplied by the site owner.
+const PRODUCT_PURCHASE_LINKS = {
+  "tr030": {
+    "name": "TR 030 top3 UP",
+    "href": "https://tk.tokopedia.com/ZSbXq8XYm/",
+    "channel": "tokopedia",
+    "label": "Beli di Tokopedia ↗",
+    "aria": "Beli TR 030 top3 UP di Tokopedia"
+  },
+  "sul": {
+    "name": "SUL 181 d",
+    "href": "https://tk.tokopedia.com/ZSbXqYjsp/",
+    "channel": "tokopedia",
+    "label": "Beli di Tokopedia ↗",
+    "aria": "Beli SUL 181 d di Tokopedia"
+  },
+  "sul-sk": {
+    "name": "SUL 181 d SK",
+    "href": "https://tk.tokopedia.com/ZSbXVtGPT/",
+    "channel": "tokopedia",
+    "label": "Beli di Tokopedia ↗",
+    "aria": "Beli SUL 181 d SK di Tokopedia"
+  },
+  "elpa8": {
+    "name": "ELPA 8",
+    "href": "https://tk.tokopedia.com/ZSbXqLCbf/",
+    "channel": "tokopedia",
+    "label": "Beli di Tokopedia ↗",
+    "aria": "Beli ELPA 8 di Tokopedia"
+  },
+  "simplexa": {
+    "name": "SIMPLEXA 601 top",
+    "href": "https://tk.tokopedia.com/ZSbXV7uNu/",
+    "channel": "tokopedia",
+    "label": "Beli di Tokopedia ↗",
+    "aria": "Beli SIMPLEXA 601 top di Tokopedia"
+  },
+  "tr610": {
+    "name": "TR 610 top3",
+    "href": "https://tk.tokopedia.com/ZSbXqL8Df/",
+    "channel": "tokopedia",
+    "label": "Beli di Tokopedia ↗",
+    "aria": "Beli TR 610 top3 di Tokopedia"
+  },
+  "pb": {
+    "name": "iONprime PB KNX",
+    "channel": "whatsapp",
+    "href": "https://wa.me/6285122188879?text=Halo%20PT%20Klik%20Hiro%20Optima%2C%20saya%20ingin%20berkonsultasi%20tentang%20produk%20iONprime%20PB%20KNX.",
+    "label": "Tanya via WhatsApp ↗",
+    "aria": "Tanyakan iONprime PB KNX melalui WhatsApp"
+  },
+  "cp4": {
+    "name": "iONprime CP4 KNX",
+    "channel": "whatsapp",
+    "href": "https://wa.me/6285122188879?text=Halo%20PT%20Klik%20Hiro%20Optima%2C%20saya%20ingin%20berkonsultasi%20tentang%20produk%20iONprime%20CP4%20KNX.",
+    "label": "Tanya via WhatsApp ↗",
+    "aria": "Tanyakan iONprime CP4 KNX melalui WhatsApp"
+  }
+};
+
 // Navigation: mobile menu and section state.
 const toggle = document.querySelector('.menu-toggle');
 const menu = document.querySelector('#nav-menu');
@@ -110,6 +170,16 @@ if (dialog) {
 let selectedProduct;
 document.querySelectorAll('[data-product]').forEach(button => button.addEventListener('click', () => {
   selectedProduct = PRODUCTS[button.dataset.product];
+  const purchase = PRODUCT_PURCHASE_LINKS[button.dataset.product];
+  const purchaseButton = document.querySelector('#dialog-buy');
+  if (purchase && purchaseButton) {
+    purchaseButton.href = purchase.href;
+    purchaseButton.setAttribute('aria-label', purchase.aria);
+    purchaseButton.querySelector('[data-purchase-label]').textContent = purchase.label;
+    purchaseButton.querySelectorAll('[data-purchase-icon]').forEach(icon => {
+      icon.toggleAttribute('hidden', icon.dataset.purchaseIcon !== purchase.channel);
+    });
+  }
   document.querySelector('#dialog-full').href = button.dataset.product + '.html';
   document.querySelector('#dialog-title').textContent = selectedProduct.name;
   document.querySelector('#dialog-kind').textContent = selectedProduct.kind;
