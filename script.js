@@ -231,7 +231,7 @@ document.querySelectorAll('[data-carousel]').forEach(carousel => {
   let visible = true;
   let gesture = null;
   let timer;
-  const interval = Number(carousel.dataset.interval) || 3000;
+  const interval = Number(carousel.dataset.interval) || 5000;
   carousel.querySelector('.carousel-controls').hidden = false;
   carousel.querySelector('.carousel-navigation').hidden = false;
 
