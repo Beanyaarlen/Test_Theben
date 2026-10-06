@@ -1,5 +1,12 @@
 "use strict";
 const PRODUCTS = {
+  "elpa8": {
+  "name": "ELPA 8",
+  "kind": "Staircase time switch",
+  "description": "Timer tangga elektromekanis dengan durasi nyala 1-7 menit.",
+  "spec": "1-7 menit · DIN rail · 1 modul",
+  "size": "Item no. 0080002"
+},
   "cp4": {
     "name": "iONprime CP4 KNX",
     "kind": "Room controller KNX",
