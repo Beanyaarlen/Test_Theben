@@ -176,7 +176,8 @@ document.querySelectorAll('[data-image]').forEach(slot => {
   image.onerror = () => { /* Keep the labeled placeholder when no photo has been supplied. */ };
   image.src = slot.dataset.image;
 });
-document.querySelector('#year').textContent = new Date().getFullYear();
+const yearElement = document.querySelector('#year');
+if (yearElement) yearElement.textContent = new Date().getFullYear();
 
 // One active information panel prevents mismatched columns on product pages.
 document.querySelectorAll('[data-tabs]').forEach(group => {
@@ -214,4 +215,105 @@ document.querySelectorAll('[data-tabs]').forEach(group => {
     });
   });
   selectTab(tabs[0]);
+});
+
+
+// Homepage carousel: buttons, keyboard, pointer swipe and automatic playback.
+document.querySelectorAll('[data-carousel]').forEach(carousel => {
+  const viewport = carousel.querySelector('.carousel-viewport');
+  const track = carousel.querySelector('.carousel-track');
+  const slides = [...carousel.querySelectorAll('.carousel-slide')];
+  const dots = [...carousel.querySelectorAll('[data-carousel-slide]')];
+  const status = carousel.querySelector('[data-carousel-status]');
+  if (slides.length < 2) return;
+
+  let index = 0;
+  let visible = true;
+  let gesture = null;
+  let timer;
+  const interval = Number(carousel.dataset.interval) || 5000;
+  carousel.querySelector('.carousel-controls').hidden = false;
+  carousel.querySelector('.carousel-navigation').hidden = false;
+
+  function updatePlayback() {
+    window.clearTimeout(timer);
+    if (!gesture && visible && !document.hidden) {
+      timer = window.setTimeout(() => showSlide(index + 1), interval);
+    }
+  }
+
+  function showSlide(next, announce = false) {
+    index = (next + slides.length) % slides.length;
+    track.style.transform = `translateX(-${index * 100}%)`;
+    carousel.classList.remove('is-dragging');
+    slides.forEach((slide, position) => {
+      const active = position === index;
+      slide.setAttribute('aria-hidden', String(!active));
+      slide.inert = !active;
+      slide.classList.toggle('is-active', active);
+    });
+    dots.forEach((dot, position) => {
+      if (position === index) dot.setAttribute('aria-current', 'true');
+      else dot.removeAttribute('aria-current');
+    });
+    // Fetch the next photograph ahead of time while keeping the first image fast.
+    slides[index].querySelector('img').loading = 'eager';
+    slides[(index + 1) % slides.length].querySelector('img').loading = 'eager';
+    if (announce) status.textContent = slides[index].getAttribute('aria-label');
+    updatePlayback();
+  }
+
+  carousel.querySelector('[data-carousel-prev]').addEventListener('click', () => showSlide(index - 1, true));
+  carousel.querySelector('[data-carousel-next]').addEventListener('click', () => showSlide(index + 1, true));
+  dots.forEach(dot => dot.addEventListener('click', () => showSlide(Number(dot.dataset.carouselSlide), true)));
+
+  carousel.addEventListener('keydown', event => {
+    let next;
+    if (event.key === 'ArrowRight') next = index + 1;
+    if (event.key === 'ArrowLeft') next = index - 1;
+    if (event.key === 'Home') next = 0;
+    if (event.key === 'End') next = slides.length - 1;
+    if (next !== undefined) { event.preventDefault(); showSlide(next, true); }
+  });
+  // Manual navigation restarts the five-second delay without permanently stopping playback.
+  viewport.addEventListener('pointerdown', event => {
+    if (!event.isPrimary || event.button !== 0 || event.target.closest('button, a')) return;
+    gesture = { id: event.pointerId, x: event.clientX, y: event.clientY, delta: 0, horizontal: false };
+    viewport.setPointerCapture(event.pointerId);
+    updatePlayback();
+  });
+  viewport.addEventListener('pointermove', event => {
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const dx = event.clientX - gesture.x;
+    const dy = event.clientY - gesture.y;
+    if (!gesture.horizontal && Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) gesture.horizontal = true;
+    if (!gesture.horizontal) return;
+    if (event.cancelable) event.preventDefault();
+    gesture.delta = dx;
+    let offset = Math.max(-viewport.clientWidth * .3, Math.min(viewport.clientWidth * .3, dx));
+    if ((index === 0 && offset > 0) || (index === slides.length - 1 && offset < 0)) offset *= .2;
+    carousel.classList.add('is-dragging');
+    track.style.transform = `translateX(calc(-${index * 100}% + ${offset}px))`;
+  });
+  function finishGesture(event, cancelled = false) {
+    if (!gesture || gesture.id !== event.pointerId) return;
+    const movement = gesture;
+    gesture = null;
+    if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
+    const threshold = Math.min(60, viewport.clientWidth * .15);
+    if (!cancelled && movement.horizontal && Math.abs(movement.delta) > threshold) {
+      showSlide(index + (movement.delta < 0 ? 1 : -1), true);
+    } else showSlide(index);
+  }
+  viewport.addEventListener('pointerup', event => finishGesture(event));
+  viewport.addEventListener('pointercancel', event => finishGesture(event, true));
+  viewport.addEventListener('lostpointercapture', event => finishGesture(event, true));
+  document.addEventListener('visibilitychange', updatePlayback);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(entries => {
+      visible = entries[0].isIntersecting;
+      updatePlayback();
+    }, { threshold: .1 }).observe(carousel);
+  }
+  showSlide(0);
 });
