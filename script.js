@@ -226,13 +226,8 @@ form?.addEventListener('submit', event => {
   if (!form.reportValidity()) return;
   const data = new FormData(form);
   const message = `Halo PT Klik Hiro Optima, saya ingin berkonsultasi tentang Theben.\n\nNama: ${data.get('name').trim()}\nPerusahaan: ${data.get('company').trim() || '-'}\nEmail: ${data.get('email').trim() || '-'}\nWhatsApp: ${data.get('phone').trim()}\nMinat: ${data.get('interest')}\n\nInformasi proyek:\n${data.get('project').trim()}`;
-  const link = document.createElement('a');
-  link.href = 'https://wa.me/6285122188879?text=' + encodeURIComponent(message);
-  link.target = '_blank'; link.rel = 'noopener';
-  link.className = 'text-link'; link.textContent = 'Buka pesan di WhatsApp ↗';
-  const status = document.querySelector('#form-status');
-  status.replaceChildren(document.createTextNode('Pesan siap ditinjau. '), link);
-  link.focus();
+  const whatsappUrl = 'https://wa.me/6285122188879?text=' + encodeURIComponent(message);
+  window.location.assign(whatsappUrl);
 });
 
 if (form) {
