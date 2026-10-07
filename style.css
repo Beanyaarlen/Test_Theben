@@ -481,3 +481,19 @@ form label { font-size: 12px; }
   .product-diagrams .dimension-drawing { grid-column: auto; }
   .product-diagrams .dimension-drawing img { height: 300px; }
 }
+
+/* Separate the KNX collection from the daily timer product. */
+.home-products--knx { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.product-group--timer { border-top: 1px solid var(--border); }
+.home-products--timer { grid-template-columns: minmax(0,1fr); }
+.home-product.home-product--wide { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); align-items: center; }
+.home-product--wide .photo-slot { aspect-ratio: 16/10; border-bottom: 0; border-right: 1px solid var(--border); }
+.home-product--wide > div:last-child { padding: clamp(28px,4vw,56px); }
+.home-product--wide h3 { font-size: clamp(26px,3vw,38px); }
+.home-product--wide p { max-width: 420px; }
+@media(max-width:700px) {
+  .home-products--knx { grid-template-columns: minmax(0,1fr); }
+  .home-product.home-product--wide { grid-template-columns: minmax(0,1fr); }
+  .home-product--wide .photo-slot { aspect-ratio: 4/3; border-right: 0; border-bottom: 1px solid var(--border); }
+  .home-product--wide > div:last-child { padding: 26px; }
+}
