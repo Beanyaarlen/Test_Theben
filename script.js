@@ -1,5 +1,5 @@
 "use strict";
-const PRODUCTS = {
+const PRODUCTS = window.CMS_PRODUCTS || {
   "elpa8": {
   "name": "ELPA 8",
   "kind": "Staircase time switch",
@@ -59,7 +59,7 @@ const PRODUCTS = {
 };
 
 // Product-specific buying links supplied by the site owner.
-const PRODUCT_PURCHASE_LINKS = {
+const PRODUCT_PURCHASE_LINKS = window.CMS_PRODUCT_PURCHASE_LINKS || {
   "tr030": {
     "name": "TR 030 top3 UP",
     "href": "https://tk.tokopedia.com/ZSbXq8XYm/",
